@@ -6,7 +6,6 @@ import datetime
 from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.chrome.options import Options
-<<<<<<< HEAD
 import time
 import json
 
@@ -19,12 +18,12 @@ def write_to_file(data):
 	f.close()
 
 earliest_time = -1
-start_date_str = "2016-06-01"
+start_date_str = "2015-06-01"
 start_date_unix = time.mktime(datetime.datetime.strptime(start_date_str, "%Y-%m-%d").timetuple())
 
 while(earliest_time < 0 or start_date_unix < earliest_time):
 
-	url = 'https://twitter.com/search?q=jpm%20since%3A' + start_date_str + '%20until%3A2018-05-31&src=typd&lang=en'
+	url = 'https://twitter.com/search?q=jpm%20since%3A' + start_date_str + '%20until%3A2018-06-30&src=typd&lang=en'
 
 	MAX_SCROLLS = 100
 
@@ -37,7 +36,7 @@ while(earliest_time < 0 or start_date_unix < earliest_time):
 		# Action scroll down
 		driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
 		print(str(i) + " Scrolling...")
-		time.sleep(3)
+		time.sleep(2)
 
 	print("DONE SCROLLING!")
 
@@ -60,8 +59,9 @@ while(earliest_time < 0 or start_date_unix < earliest_time):
 			username = tweet_raw.find('span', {'class': 'username'}).find("b").text
 			retweets = tweet_raw.find('div', {'class': 'ProfileTweet-action--retweet'}).find('span', {'class': 'ProfileTweet-actionCountForPresentation'}).text
 			likes = tweet_raw.find('div', {'class': 'ProfileTweet-action--favorite'}).find('span', {'class': 'ProfileTweet-actionCountForPresentation'}).text
-			tweets_unique[data_tweet_id] = str(username)+"\t"+str(time_div)+"\t"+str(retweets)+"\t"+str(likes)+"\t"+str(tweet_text)
 			earliest_time = int(time_div)/1000
+			tweets_unique[data_tweet_id] = str(username)+"\t"+str(earliest_time)+"\t"+str(retweets)+"\t"+str(likes)+"\t"+str(tweet_text)
+			
 			# print("ID:", data_tweet_id)
 			# print(time_div, datetime.datetime.utcfromtimestamp(int(time_div)/1000))
 			# print("u", username, "retweets:", retweets, "likes:", likes, "tweet", tweet_text)
@@ -72,5 +72,5 @@ while(earliest_time < 0 or start_date_unix < earliest_time):
 		# 	print('-----')
 
 	print("after filter count:", len(tweets_unique), "scraped count:", len(tweets_raw))
-	print("Latest time unix", start_date_unix)
+	print("Latest time unix", earliest_time, datetime.datetime.utcfromtimestamp(earliest_time))
 	write_to_file(tweets_unique)
